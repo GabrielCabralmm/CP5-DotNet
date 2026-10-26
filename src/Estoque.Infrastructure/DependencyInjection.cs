@@ -3,6 +3,7 @@ using Estoque.Domain.Interfaces;
 using Estoque.Infrastructure.Data;
 using Estoque.Infrastructure.ExternalServices;
 using Estoque.Infrastructure.Repositories;
+using Estoque.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,10 @@ public static class DependencyInjection
                 options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(5);
                 options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(20);
             });
+
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddSingleton<ITokenService, JwtTokenService>();
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
 
         return services;
     }
